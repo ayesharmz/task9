@@ -1,4 +1,4 @@
-name: Terraform Deploy Strapi ECS
+name: Terraform Deploy Strapi ECS using fargate spot
 
 on:
   push:
