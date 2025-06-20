@@ -1,5 +1,5 @@
 resource "aws_ecs_service" "strapi" {
-  name            = "strapi-service-v3"
+  name            = "strapi-service-v4"
   cluster         = aws_ecs_cluster.strapi.id
   task_definition = aws_ecs_task_definition.strapi.arn
   launch_type     = "FARGATE"
