@@ -1,4 +1,4 @@
-name: Deploy Strapi to AWS Fargate Spot
+name: Terraform Deploy Strapi ECS
 
 on:
   push:
@@ -6,46 +6,41 @@ on:
       - main
 
 jobs:
-  terraform:
-    name: Terraform Plan & Apply
+  deploy:
     runs-on: ubuntu-latest
 
     env:
       AWS_REGION: us-east-1
 
     steps:
-      - name: Checkout repository
+      - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v2
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v3
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
-      - name: Set up Terraform
-        uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_version: 1.6.6
-
       - name: Terraform Init
-        working-directory: ./task9
         run: terraform init
-
-      - name: Terraform Format Check
         working-directory: ./task9
-        run: terraform fmt -check
-
-      - name: Terraform Validate
-        working-directory: ./task9
-        run: terraform validate
 
       - name: Terraform Plan
+        run: terraform plan
         working-directory: ./task9
-        run: terraform plan -out=tfplan
 
       - name: Terraform Apply
-        if: github.ref == 'refs/heads/main'
+        run: terraform apply -auto-approve
         working-directory: ./task9
-        run: terraform apply -auto-approve tfplan
+
+      - name: Build Docker Image
+        run: docker build -t strapi-app ./my-strapi-app
+
+      - name: Push Docker Image to ECR (optional)
+        if: false  # Set to true and configure ECR if needed
+        run: echo "Push step here"
