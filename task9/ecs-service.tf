@@ -16,5 +16,5 @@ resource "aws_ecs_service" "strapi" {
     weight            = 1
   }
 
-  depends_on = [aws_lb_listener.strapi]
+  depends_on = [aws_lb_listener.http]
 }
